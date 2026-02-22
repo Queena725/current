@@ -1,168 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&display=swap" rel="stylesheet">
+    <title>Disciplined Self-Indulgence</title>
+    <style>
+        body {
+            margin: 0;
+            background: #f7f7f7;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&display=swap" rel="stylesheet">
+        .sticker {
+            position: absolute;
+            width: 80px; 
+            transform: translate(-50%, -50%);
+            pointer-events: none; 
+            z-index: 5;
+        }
 
-<title>Disciplined Self-Indulgence</title>
+        #character-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
 
-<style>
-body {
-    margin: 0;
-    background: #f7f7f7;
-    font-family: 'Inter', sans-serif;
-    overflow: hidden;
-    cursor: crosshair;
-}
+        #status-text {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 200; 
+            letter-spacing: 0.5px;
+            color: #666;
+        }
 
-/* Minimal title (very modern) */
-.header {
-    position: fixed;
-    top: 30px;
-    left: 40px;
-    z-index: 10;
-}
+        .discipline-group {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
 
-h1 {
-    font-weight: 100;
-    font-size: 26px;
-    letter-spacing: 1px;
-    margin: 0;
-}
+        .discipline-btn {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            border: 1px solid #000;
+            background: white;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
 
-.sub {
-    font-size: 12px;
-    font-weight: 200;
-    opacity: 0.4;
-    margin-top: 6px;
-}
+        .discipline-btn:hover {
+            background: #000;
+            color: #fff;
+        }
 
-/* Sticker style */
-.sticker {
-    position: absolute;
-    width: 110px;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    transition: transform 0.2s ease;
-}
+        /* 설명창 스타일 */
+        .respond-container {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            z-index: 1000;
+            text-align: right;
+        }
 
-.respond-container {
-    position: fixed;
-    bottom: 30px;
-    right: 40px;
-    z-index: 100;
-    text-align: right;
-}
+        .respond-trigger {
+            width: 35px;
+            height: 35px;
+            border: 1px solid rgba(0,0,0,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+        }
 
-.respond-trigger {
-    width: 30px;
-    height: 30px;
-    border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 200;
-    cursor: help;
-    transition: all 0.3s ease;
-}
+        .respond-content {
+            position: absolute;
+            bottom: 45px;
+            right: 0;
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border: 1px solid #000;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+        }
 
-.respond-content {
-    position: absolute;
-    bottom: 40px;
-    right: 0;
-    width: 300px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.4s ease;
-    text-align: left;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #333;
-}
+        .respond-container:hover .respond-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
-/* 마우스를 올렸을 때 나타나는 효과 */
-.respond-container:hover .respond-content {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
+        @keyframes dizzy {
+            0% { transform: scale(1); filter: blur(0px); }
+            50% { transform: scale(1.02) rotate(1deg); filter: blur(2px); }
+            100% { transform: scale(1); filter: blur(0px); }
+        }
 
-.respond-container:hover .respond-trigger {
-    background: #000;
-    color: #fff;
-}
-</style>
+        .is-wasted {
+            animation: dizzy 2s infinite ease-in-out;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="header">
-    <h1>Disciplined Self-Indulgence</h1>
-    <div class="sub">click to place what I like</div>
+<div id="character-container">
+    <img id="dog-gif" src="images/0.gif" style="width: 300px;">
+    <div id="status-text">ready?</div>
 </div>
 
-<div class="respond-container">
+<div class="discipline-group">
+
+<button class="discipline-btn" data-msg="Focus on your assignment!">DO ASSIGNMENT</button>
+
+<button class="discipline-btn" data-msg="Wake up! You have class tomorrow.">YOU HAVE CLASS</button>
+
+<button class="discipline-btn" data-msg="Stop drinking! Exams are coming.">EXAM SOON</button>
+
+</div><div class="respond-container">
     <div class="respond-trigger">?</div>
     <div class="respond-content">
+        
         <p><strong>Card:</strong> Disciplined self-indulgence</p>
-        <p>For this project, I interpreted "Disciplined self-indulgence" as the balance between personal desire and structural constraints. While clicking to place my favorite stickers represents "self-indulgence," I implemented a strict grid and time limits to represent "discipline." This suggests that even in our passions, there must be an underlying order and restraint to maintain balance.</p>
+        <p>
+            I chose the card "Disciplined self-indulgence" and interpreted it through a relatable student perspective. 
+            The project features a dog that increasingly indulges in alcohol (soju) as the user clicks, representing <strong>self-indulgence</strong>. 
+            However, to show <strong>discipline</strong>, I implemented "reality" buttons like assignments and classes that reset the state. 
+            It visualizes the constant effort to enjoy what we love while maintaining the responsibility to wake up for our daily duties.
+        </p>
     </div>
-</div>
-
-
 
 <script>
-// YOUR sticker files (from images folder)
-const stickers = [
+    let clickCount = 0;
+    const dogImg = document.getElementById('dog-gif');
+    const statusText = document.getElementById('status-text');
 
-    "images/love.png",
-    "images/mon.png",
-    "images/baby.png",
-    "images/ra.png",
-    "images/straw.png",
-    "images/baby2.png",
-    "images/yoshi.png",
-    "images/red.png",
-    "images/yosi.png",
-    "images/monchhichi.png"
-];
+    const dogGifs = [
+        "images/1.gif", 
+        "images/2.gif", 
+        "images/3.gif",
+        "images/4.gif",
+        "images/5.gif" 
+    ];
 
-document.addEventListener("click", function(e) {
-    const img = document.createElement("img");
-    const randomIndex = Math.floor(Math.random() * stickers.length);
-    img.src = stickers[randomIndex];
-    img.className = "sticker";
+    // 메인 클릭 이벤트 (하나로 통합)
+    document.addEventListener("click", function(e) {
+        // 버튼 클릭 시에는 술병 생성 금지
+        if (e.target.classList.contains('discipline-btn') || e.target.closest('.respond-container')) return;
 
-    // [Discipline 규칙 추가] 100px 단위로 위치를 강제 고정 (Grid)
-    const gridSize = 100;
-    const x = Math.round(e.clientX / gridSize) * gridSize;
-    const y = Math.round(e.clientY / gridSize) * gridSize;
+        const img = document.createElement("img");
+        img.src = "images/soju.png"; 
+        img.className = "sticker";
+        img.style.left = e.clientX + "px";
+        img.style.top = e.clientY + "px";
+        
+        const rotation = Math.random() * 40 - 20;
+        img.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
 
-    img.style.left = x + "px";
-    img.style.top = y + "px";
+        document.body.appendChild(img);
 
-    const rotation = Math.random() * 30 - 15;
-    img.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+        clickCount++;
+        updateDogState();
+    });
 
-    document.body.appendChild(img);
+    function updateDogState() {
+        if (clickCount >= 12) {
+            dogImg.src = dogGifs[4]; 
+            statusText.innerText = "(Need Discipline)";
+            document.body.classList.add('is-wasted');
+        } else if (clickCount >= 9) {
+            dogImg.src = dogGifs[3];
+            statusText.innerText = "spinning...";
+            document.body.classList.remove('is-wasted');
+        } else if (clickCount >= 6) {
+            dogImg.src = dogGifs[2];
+            statusText.innerText = "i love soju!";
+        } else if (clickCount >= 3) {
+            dogImg.src = dogGifs[1];
+            statusText.innerText = "tipsy";
+        } else if (clickCount > 0) {
+            dogImg.src = dogGifs[0];
+            statusText.innerText = "more soju!";
+        }
+    }
 
-    // [Discipline 규칙 추가] 3초 뒤에 사라지는 규칙
-    setTimeout(() => {
-        img.style.opacity = "0";
-        img.style.transition = "opacity 1s ease";
-        setTimeout(() => img.remove(), 1000);
-    },4000);
-});
+    const disciplineButtons = document.querySelectorAll('.discipline-btn');
+    disciplineButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            clickCount = 0;
+            dogImg.src = "images/0.gif";
+            statusText.innerText = "Ready to drink?";
+            document.body.classList.remove('is-wasted');
+            
+            const allStickers = document.querySelectorAll('.sticker');
+            allStickers.forEach(s => s.remove());
+            
+            const msg = e.target.getAttribute('data-msg');
+            alert(msg);
+        });
+    });
 </script>
-
 </body>
 </html>
